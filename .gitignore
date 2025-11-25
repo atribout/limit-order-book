@@ -1,0 +1,13 @@
+
+*.o
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+
+build/
+bin/
+.vscode/
+.idea/
+*.swp
