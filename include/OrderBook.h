@@ -2,11 +2,11 @@
 #include <map>
 #include <unordered_map>
 #include <list>
-#include <iostream>
 #include <vector>
 #include <memory>
 #include "Order.h"
 
+template<typename ListenerT>
 class OrderBook{
 private:
 
@@ -24,8 +24,8 @@ private:
 
     struct OrderLocation
     {
+        typename std::list<Order>::iterator orderIt;
         Level* levelPtr;
-        std::list<Order>::iterator orderIt;
         Side side;
         int32_t price;
         uint32_t quantity;
@@ -33,6 +33,68 @@ private:
 
     std::unordered_map<uint64_t, OrderLocation> orderLookup;
 
+    ListenerT& listener;
+
+public:
+
+    OrderBook(ListenerT& l): listener(l) {};
+
+    void submitOrder(Order order)
+    {
+        matchOrder(order);
+        if(order.quantity>0)
+        {
+            addOrder(order);
+        }
+    }
+
+    void cancelOrder(uint64_t orderId)
+    {
+        auto it = orderLookup.find(orderId);
+        if(it == orderLookup.end())
+        {
+            return;
+        }
+
+        OrderLocation& loc = it->second;
+        Level& level = *loc.levelPtr;
+
+        level.totalVolume -= loc.quantity;
+        level.orders.erase(loc.orderIt);
+
+        if(level.orders.empty())
+        {
+            if(loc.side == Side::Buy)
+            {
+                bids.erase(loc.price);
+            }
+            else
+            {
+                asks.erase(loc.price);
+            }
+        }
+        orderLookup.erase(orderId);
+        listener.onOrderCancelled(orderId);
+    }
+
+    void printBook()
+    {
+        std::cout << "--- ASKS ---" << std::endl;
+        for (auto it = asks.rbegin(); it != asks.rend(); ++it)
+        {
+            std::cout << it->first << "\t|" << it->second.totalVolume << std::endl;
+        }
+
+        std::cout << "--- BIDS ---"<< std::endl;
+        for (const auto& [price, level] : bids)
+        {
+            std::cout << price << "\t|" << level.totalVolume << std::endl;
+        }
+        std::cout << "------------" << std::endl;
+    }
+
+private:
+    
     void matchOrder(Order& incomingOrder)
     {
         while(incomingOrder.quantity>0)
@@ -81,9 +143,7 @@ private:
         Order& order = *level.orders.begin();
         uint32_t qtyTraded = std::min(incoming.quantity, order.quantity);
 
-        std::cout << ">>> TRADE EXECUTE: " << qtyTraded << "@" << price
-                  << " (Aggressor: " << incoming.id << ", Passive: " << order.id << ")"
-                  << std::endl;
+        listener.onTrade(incoming.id, order.id, price, qtyTraded);
 
         incoming.quantity -= qtyTraded;
         order.quantity -= qtyTraded;
@@ -116,61 +176,7 @@ private:
         loc.quantity = order.quantity;
 
         orderLookup[order.id] = loc;
+
+        listener.onOrderAdded(order.id, order.price, order.quantity, order.side);
     }
-
-public:
-
-    void submitOrder(Order order)
-    {
-        matchOrder(order);
-        if(order.quantity>0)
-        {
-            addOrder(order);
-        }
-    }
-
-    void cancelOrder(uint64_t orderId)
-    {
-        auto it = orderLookup.find(orderId);
-        if(it == orderLookup.end())
-        {
-            return;
-        }
-
-        OrderLocation& loc = it->second;
-        Level& level = *loc.levelPtr;
-
-        level.totalVolume -= loc.quantity;
-        level.orders.erase(loc.orderIt);
-
-        if(level.orders.empty())
-        {
-            if(loc.side == Side::Buy)
-            {
-                bids.erase(loc.price);
-            }
-            else
-            {
-                asks.erase(loc.price);
-            }
-        }
-        orderLookup.erase(orderId);
-    }
-
-    void printBook()
-    {
-        std::cout << "--- ASKS ---" << std::endl;
-        for (auto it = asks.rbegin(); it != asks.rend(); ++it)
-        {
-            std::cout << it->first << "\t|" << it->second.totalVolume << std::endl;
-        }
-
-        std::cout << "--- BIDS ---"<< std::endl;
-        for (const auto& [price, level] : bids)
-        {
-            std::cout << price << "\t|" << level.totalVolume << std::endl;
-        }
-        std::cout << "------------" << std::endl;
-    }
-
 };
