@@ -27,3 +27,10 @@ struct Order {
                   << order.quantity << " @ " << order.price;
     }
 };
+
+enum class RejectReason : uint8_t {
+    DuplicateId,
+    InvalidPrice,
+    InvalidQuantity,
+    OrderNotFound
+};

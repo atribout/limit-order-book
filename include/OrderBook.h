@@ -16,11 +16,8 @@ private:
         uint32_t totalVolume = 0;
     };
 
-    std::map<uint32_t, Level, std::greater<uint32_t>> bids;
-    std::map<uint32_t, Level> asks;
-
-    std::map<std::vector<int>, Level> ggg;
-
+    std::map<int32_t, Level, std::greater<int32_t>> bids;
+    std::map<int32_t, Level> asks;
 
     struct OrderLocation
     {
@@ -41,8 +38,25 @@ public:
 
     void submitOrder(Order order)
     {
+        if (order.quantity <= 0)
+        {
+            listener.onOrderRejected(order.id, RejectReason::InvalidQuantity);
+            return;
+        }
+        if (order.price <= 0)
+        {
+            listener.onOrderRejected(order.id, RejectReason::InvalidPrice);
+            return;
+        }
+
+        if(orderLookup.find(order.id) != orderLookup.end())
+        {
+            listener.onOrderRejected(order.id, RejectReason::DuplicateId);
+            return;
+        }
+
         matchOrder(order);
-        if(order.quantity>0)
+        if(order.quantity > 0)
         {
             addOrder(order);
         }
@@ -53,6 +67,7 @@ public:
         auto it = orderLookup.find(orderId);
         if(it == orderLookup.end())
         {
+            listener.onOrderRejected(order.id, RejectReason::OrderNotFound);
             return;
         }
 
@@ -60,6 +75,7 @@ public:
         Level& level = *loc.levelPtr;
 
         level.totalVolume -= loc.quantity;
+        listener.onOrderBookUpdate(loc.price, level.totalVolume, loc.side);
         level.orders.erase(loc.orderIt);
 
         if(level.orders.empty())
@@ -146,27 +162,27 @@ private:
         listener.onTrade(incoming.id, order.id, price, qtyTraded);
 
         incoming.quantity -= qtyTraded;
-        order.quantity -= qtyTraded;
-        level.totalVolume -= qtyTraded;
 
-        if(order.quantity == 0)
+        if (qtyTraded == order.quantity)
         {
             cancelOrder(order.id);
+        }
+        else
+        {
+            order.quantity -= qtyTraded;
+            orderLookup[order.id].quantity = order.quantity;
+            level.totalVolume -= qtyTraded;
+            listener.onOrderBookUpdate(price, level.totalVolume, order.side);
         }
     }
 
     void addOrder(const Order& order)
     {   
-        auto it = orderLookup.find(order.id);
-        if(it != orderLookup.end())
-        {
-            return;
-        }
-
         Level& level = (order.side == Side::Buy) ? bids[order.price] : asks[order.price];
 
         level.orders.push_back(order);
         level.totalVolume += order.quantity;
+        listener.onOrderBookUpdate(order.price, level.totalVolume, order.side);
 
         OrderLocation loc;
         loc.levelPtr = &level;
