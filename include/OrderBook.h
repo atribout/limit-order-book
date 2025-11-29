@@ -4,9 +4,20 @@
 #include <list>
 #include <vector>
 #include <memory>
+#include <concepts>
 #include "Order.h"
 
-template<typename ListenerT>
+template<typename T>
+concept TradeListenerConcept = requires(T t, uint64_t id, int32_t p, uint32_t q, Side s, RejectReason r) {
+    { t.onTrade(id, id, p, q)};
+    { t.onOrderAdded(id, p, q, s)};
+    { t.onOrderCancelled(id)};
+    { t.onOrderRejected(id, r)};
+    { t.onOrderBookUpdate(p, q, s)};
+};
+
+
+template<TradeListenerConcept ListenerT>
 class OrderBook{
 private:
 
