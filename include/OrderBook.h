@@ -147,9 +147,9 @@ private:
             {
                 if(bids.empty()) break;
 
-                auto bestAskIt = bids.begin();
-                Level& level = bestAskIt->second;
-                int32_t bestPrice = bestAskIt->first;
+                auto bestBidIt = bids.begin();
+                Level& level = bestBidIt->second;
+                int32_t bestPrice = bestBidIt->first;
 
                 if(incomingOrder.price <= bestPrice)
                 {
