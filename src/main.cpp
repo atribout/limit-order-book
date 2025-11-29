@@ -20,7 +20,7 @@ struct ConsoleListener
         std::cout << "[REJ] Order " << id << "rejected (Reason: " << (int)reason << ")\n";
     }
 
-    void onTrade(uint64_t aggId, uint64_t passId, uint32_t qty, int32_t price) 
+    void onTrade(uint64_t aggId, uint64_t passId, int32_t price, uint32_t qty) 
     {
         std::cout << ">>> TRADE EXECUTE: " << qty << "@" << price
             << " (Aggressor: " << aggId<< ", Passive: " << passId << ")\n";
@@ -43,7 +43,7 @@ struct EmptyListener
 
     void onOrderRejected(uint64_t id, RejectReason reason) {}
 
-    void onTrade(uint64_t aggId, uint64_t passId, uint32_t qty, int32_t price) {}
+    void onTrade(uint64_t aggId, uint64_t passId, int32_t price, uint32_t qty) {}
 
     void onOrderBookUpdate(int32_t price, uint32_t volume, Side side) {}
 };
