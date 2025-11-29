@@ -78,7 +78,7 @@ public:
         auto it = orderLookup.find(orderId);
         if(it == orderLookup.end())
         {
-            listener.onOrderRejected(order.id, RejectReason::OrderNotFound);
+            listener.onOrderRejected(orderId, RejectReason::OrderNotFound);
             return;
         }
 
