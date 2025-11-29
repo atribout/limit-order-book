@@ -35,6 +35,37 @@ struct ConsoleListener
     }
 };
 
+struct EmptyListener
+{
+    void onOrderAdded(uint64_t id, int32_t price, uint32_t qty, Side side) {}
+
+    void onOrderCancelled(uint64_t id) {}
+
+    void onOrderRejected(uint64_t id, RejectReason reason) {}
+
+    void onTrade(uint64_t aggId, uint64_t passId, uint32_t qty, int32_t price) {}
+
+    void onOrderBookUpdate(int32_t price, uint32_t volume, Side side) {}
+};
+
+struct VectorListener {
+    struct TradeInfo { uint32_t qty; int32_t price; };
+    std::vector<TradeInfo> trades;
+    std::vector<uint64_t> cancelledIds;
+
+    void onTrade(uint64_t, uint64_t, int32_t price, uint32_t qty) {
+        trades.push_back({qty, price});
+    }
+
+    void onOrderCancelled(uint64_t id) {
+        cancelledIds.push_back(id);
+    }
+    
+    void onOrderAdded(uint64_t, int32_t, uint32_t, Side) {}
+    void onOrderRejected(uint64_t, RejectReason) {}
+    void onOrderBookUpdate(int32_t, uint32_t, Side) {}
+};
+
 int main() 
 {
     ConsoleListener l;
