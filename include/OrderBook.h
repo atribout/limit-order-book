@@ -131,11 +131,11 @@ private:
                 if(asks.empty()) break;
 
                 auto bestAskIt = asks.begin();
-                Level& level = bestAskIt->second;
                 int32_t bestPrice = bestAskIt->first;
 
                 if(incomingOrder.price >= bestPrice)
                 {
+                    Level& level = bestAskIt->second;
                     executeTrade(incomingOrder, level, bestPrice);
                 }
                 else
@@ -148,11 +148,11 @@ private:
                 if(bids.empty()) break;
 
                 auto bestBidIt = bids.begin();
-                Level& level = bestBidIt->second;
                 int32_t bestPrice = bestBidIt->first;
 
                 if(incomingOrder.price <= bestPrice)
                 {
+                    Level& level = bestAskIt->second;
                     executeTrade(incomingOrder, level, bestPrice);
                 }
                 else
