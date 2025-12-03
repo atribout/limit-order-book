@@ -152,7 +152,7 @@ private:
 
                 if(incomingOrder.price <= bestPrice)
                 {
-                    Level& level = bestAskIt->second;
+                    Level& level = bestBidIt->second;
                     executeTrade(incomingOrder, level, bestPrice);
                 }
                 else
