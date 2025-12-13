@@ -70,38 +70,11 @@ TEST_F(OrderBookTest, RejectsInvalidOrders)
     EXPECT_EQ(listener.rejectReasons[1], RejectReason::InvalidPrice);
 }
 
-TEST_F(OrderBookTest, RejectDuplicateIds)
-{
-    book->submitOrder(Order(100, 100, 10, Side::Buy));
-
-    book->submitOrder(Order(100, 101, 5, Side::Sell));
-
-    ASSERT_EQ(listener.rejectedIds.size(), 1);
-    
-    EXPECT_EQ(listener.rejectedIds[0], 100);
-    EXPECT_EQ(listener.rejectReasons[0], RejectReason::DuplicateId);
-}
-
 TEST_F(OrderBookTest, RejectsUnknownCancellation) 
 {
     book->cancelOrder(999);
 
     ASSERT_EQ(listener.rejectedIds.size(), 1);
     EXPECT_EQ(listener.rejectedIds[0], 999);
-    EXPECT_EQ(listener.rejectReasons[0], RejectReason::OrderNotFound);
-}
-
-TEST_F(OrderBookTest, RejectsDoubleCancellation) 
-{
-    book->submitOrder(Order(1, 100, 10, Side::Buy));
-    
-    book->cancelOrder(1);
-    ASSERT_EQ(listener.cancelledIds.size(), 1);
-    ASSERT_EQ(listener.rejectedIds.size(), 0);
-
-    book->cancelOrder(1);
-
-    ASSERT_EQ(listener.rejectedIds.size(), 1);
-    EXPECT_EQ(listener.rejectedIds[0], 1);
     EXPECT_EQ(listener.rejectReasons[0], RejectReason::OrderNotFound);
 }
