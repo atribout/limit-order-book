@@ -78,3 +78,13 @@ TEST_F(OrderBookTest, RejectsUnknownCancellation)
     EXPECT_EQ(listener.rejectedIds[0], 999);
     EXPECT_EQ(listener.rejectReasons[0], RejectReason::OrderNotFound);
 }
+
+TEST_F(OrderBookTest, TimePriorityFIFO) {
+    book->submitOrder(Order(1, 100, 10, Side::Sell));
+    book->submitOrder(Order(2, 100, 10, Side::Sell));
+
+    book->submitOrder(Order(3, 100, 10, Side::Buy));
+
+    ASSERT_EQ(listener.trades.size(), 1);
+    EXPECT_EQ(listener.trades[0].passId, 1);
+}
