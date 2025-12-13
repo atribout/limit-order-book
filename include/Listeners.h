@@ -50,19 +50,43 @@ struct EmptyListener
 };
 
 struct VectorListener {
-    struct TradeInfo { uint32_t qty; int32_t price; };
+    struct TradeInfo 
+    { 
+        uint64_t aggId;
+        uint64_t passId;
+        int32_t price;
+        uint32_t qty; 
+    };
+
     std::vector<TradeInfo> trades;
     std::vector<uint64_t> cancelledIds;
+    std::vector<uint64_t> rejectedIds;
+    std::vector<RejectReason> rejectReasons;
 
-    void onTrade(uint64_t, uint64_t, int32_t price, uint32_t qty) {
-        trades.push_back({qty, price});
+    void onTrade(uint64_t aggId, uint64_t passId, int32_t price, uint32_t qty) 
+    {
+        trades.push_back({aggId, passId, price, qty});
     }
 
-    void onOrderCancelled(uint64_t id) {
+    void onOrderCancelled(uint64_t id) 
+    {
         cancelledIds.push_back(id);
+    }
+
+    void onOrderRejected(uint64_t id, RejectReason reason) 
+    {
+        rejectedIds.push_back(id);
+        rejectReasons.push_back(reason);
     }
     
     void onOrderAdded(uint64_t, int32_t, uint32_t, Side) {}
-    void onOrderRejected(uint64_t, RejectReason) {}
     void onOrderBookUpdate(int32_t, uint32_t, Side) {}
+
+    void clear() 
+    {
+        trades.clear();
+        cancelledIds.clear();
+        rejectedIds.clear();
+        rejectReasons.clear();
+    }
 };
