@@ -18,6 +18,11 @@ struct Order {
     uint32_t quantity;
     Side side;
 
+    int32_t prev = -1;
+    int32_t next = -1;
+
+    Order() = default;
+
     Order(uint64_t id, int32_t price, uint32_t quantity, Side side)
         : id(id), price(price), quantity(quantity), side(side) {}
 
@@ -32,5 +37,6 @@ enum class RejectReason : uint8_t {
     DuplicateId,
     InvalidPrice,
     InvalidQuantity,
-    OrderNotFound
+    OrderNotFound,
+    SystemFull
 };
