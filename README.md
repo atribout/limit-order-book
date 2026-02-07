@@ -45,6 +45,6 @@ target_link_libraries(your_app PRIVATE lob_core)
 - **Matching Algo:** Price-Time Priority (FIFO).
 - **Safety:** Comprehensive Unit Tests using Google Test to ensure matching logic correctness under load.
 
-## Architecture
+## License
 
 MIT License.
