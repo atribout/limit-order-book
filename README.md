@@ -6,7 +6,7 @@
 
 A high-performance, single-threaded Limit Order Book (LOB) engine designed for High-Frequency Trading (HFT) simulations.
 
-This engine achieves **20 nanosecond** median latency (approx. 74 CPU cycles) on standard hardware by eliminating dynamic memory allocations on the hot path, maximizing CPU cache locality, and utilizing Data-Oriented Design.
+This engine achieves **20 nanoseconds** median latency (approx. 74 CPU cycles) on standard hardware by eliminating dynamic memory allocations on the hot path, maximizing CPU cache locality, and utilizing Data-Oriented Design.
 
 ## Key Features
 
@@ -32,8 +32,8 @@ This library is header-only (mostly) and designed to be included via CMake `Fetc
 include(FetchContent)
 FetchContent_Declare(
   lob_core
-  GIT_REPOSITORY [https://github.com/your-username/limit-order-book.git](https://github.com/your-username/limit-order-book.git)
-  GIT_TAG main
+  GIT_REPOSITORY https://github.com/atribout/limit-order-book.git
+  GIT_TAG 	 main
 )
 FetchContent_MakeAvailable(lob_core)
 target_link_libraries(your_app PRIVATE lob_core)
