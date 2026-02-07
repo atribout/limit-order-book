@@ -33,7 +33,7 @@ include(FetchContent)
 FetchContent_Declare(
   lob_core
   GIT_REPOSITORY https://github.com/atribout/limit-order-book.git
-  GIT_TAG 	 main
+  GIT_TAG        main
 )
 FetchContent_MakeAvailable(lob_core)
 target_link_libraries(your_app PRIVATE lob_core)
