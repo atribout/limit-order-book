@@ -21,7 +21,6 @@ This engine achieves **20 nanoseconds** median latency (approx. 74 CPU cycles) o
 **Environment:** AMD Ryzen 5 5600X @ 3.7 GHz | Rocky Linux 9.7 | GCC 11.5.0 `-O3`
 
 ![Benchmark Graph](benchmark_results.png)
-
 > **Note:** The 99th percentile (p99) at 60ns proves that the engine is not only fast on average, but consistently fast for almost every order. 20ns is roughly equivalent to the latency of a single L2 Cache access. The engine logic effectively runs at the speed of memory access.
 
 ## Integration
