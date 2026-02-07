@@ -20,14 +20,9 @@ This engine achieves **20 nanosecond** median latency (approx. 74 CPU cycles) on
 
 **Environment:** AMD Ryzen 5 5600X @ 3.7 GHz | Rocky Linux 9.7 | GCC 11.5.0 `-O3`
 
-| Implementation | Median Latency (p50) | Tail Latency (p99) | Throughput |
-| :--- | :--- | :--- | :--- |
-| **v0.1 (STL Map/List)** | ~70 ns | ~300 ns | Allocator Bound |
-| **v1.0 (Pool/Vector)** | **~20 ns** | **~60 ns** | **Line Rate** |
+![Benchmark Graph](benchmark_results.png)
 
 > **Note:** The 99th percentile (p99) at 60ns proves that the engine is not only fast on average, but consistently fast for almost every order. 20ns is roughly equivalent to the latency of a single L2 Cache access. The engine logic effectively runs at the speed of memory access.
-
-![Benchmark Graph](benchmark_results.png)
 
 ## Integration
 
@@ -50,3 +45,7 @@ target_link_libraries(your_app PRIVATE lob_core)
 - **Price Levels:** `std::vector<Level>` (direct indexing by price).
 - **Matching Algo:** Price-Time Priority (FIFO).
 - **Safety:** Comprehensive Unit Tests using Google Test to ensure matching logic correctness under load.
+
+## Architecture
+
+MIT License.
